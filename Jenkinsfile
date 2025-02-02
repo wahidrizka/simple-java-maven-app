@@ -1,0 +1,22 @@
+node {
+    def mavenImage = 'maven:3.9.0'
+
+    // Menjalankan Docker container dengan image Maven
+    docker.image(mavenImage).inside('-v /root/.m2:/root/.m2') {
+        stage('Build') {
+            sh 'mvn -B -DskipTests clean package'
+        }
+
+        stage('Test') {
+            sh 'mvn test'
+
+            // Post-test actions
+            junit 'target/surefire-reports/*.xml'
+        }
+
+        stage('Deliver') {
+            sh './jenkins/scripts/deliver.sh'
+        }
+    }
+}
+
