@@ -16,8 +16,7 @@ node {
             sh '''  
                 # Kirim file JAR dan Dockerfile ke EC2
                 scp -o StrictHostKeyChecking=no target/my-app-1.0-SNAPSHOT.jar ec2-user@18.141.145.155:/home/ec2-user/app/
-                scp -o StrictHostKeyChecking=no Dockerfile ec2-user@18.141.145.155:/home/ec2-user/app/
-
+                
                 # SSH ke EC2 untuk membangun dan menjalankan container
                 ssh -o StrictHostKeyChecking=no ec2-user@18.141.145.155 "
                     cd /home/ec2-user/app;
@@ -31,19 +30,26 @@ node {
                     sudo usermod -aG docker ec2-user;
                 fi;
               
-                # Build image baru
-                docker build -t my-app:latest .;
-
                 # Stop dan remove container lama jika ada
-                docker stop my-app-container || true;
-                docker rm my-app-container || true;
+                docker stop simple-java-maven-app-container || true;
+                docker rm simple-java-maven-app-container || true;
                 
+                # Hapus image lama untuk mencegah konflik
+                docker rmi simple-java-maven-app:latest || true;
+                
+                # Build image tanpa Dockerfile
+                docker build -t simple-java-maven-app:latest - <<EOF
+                FROM openjdk:17-jre-slim
+                COPY /home/ec2-user/app/my-app-1.0-SNAPSHOT.jar /app.jar
+                CMD [\"java\", \"-jar\", \"/app.jar\"]
+                EOF
+
                 # Jalankan container baru
-                docker run -d --name my-app-container -p 8080:8080 my-app:latest;
+                docker run -d --name simple-java-maven-app-container -p 8080:8080 my-app:latest;
 
                 # Tampilkan log sementara
                 sleep 5;
-                docker logs my-app-container --tail 10;
+                docker logs simple-java-maven-app-container --tail 10;
 
                 # Jeda eksekusi pipeline selama 1 menit
                 echo "Menunggu 1 menit sebelum pipeline selesai..."
