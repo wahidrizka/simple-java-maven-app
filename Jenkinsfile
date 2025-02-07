@@ -15,10 +15,14 @@ node {
         junit 'target/surefire-reports/*.xml'
     }
 
+    stage('Manual Approval') {
+        input message: 'Lanjutkan ke tahap Deploy?', ok: 'Proceed'
+    }
+
     stage('Deploy') {
         sshagent(['9dcfb994-e247-45ab-af64-9c7b51df5acc']) {
             sh '''
-                # Kirim file JAR ke EC2
+                # Kirim file hasil build ke EC2
                 scp -o StrictHostKeyChecking=no target/my-app-1.0-SNAPSHOT.jar ec2-user@18.141.145.155:/home/ec2-user/app/
                 scp -o StrictHostKeyChecking=no ${WORKSPACE}/Dockerfile ec2-user@18.141.145.155:/home/ec2-user/app/
 
@@ -26,7 +30,7 @@ node {
                 ssh -o StrictHostKeyChecking=no ec2-user@18.141.145.155 "
                     cd /home/ec2-user/app;
 
-                    # Pastikan Docker sudah terinstal
+                    # Memastikan Docker sudah terinstal
                     if ! command -v docker &> /dev/null; then
                         sudo yum update -y;
                         sudo yum install docker -y;
