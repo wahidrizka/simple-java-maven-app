@@ -19,8 +19,8 @@ node {
                 scp -o StrictHostKeyChecking=no target/my-app-1.0-SNAPSHOT.jar ec2-user@18.141.145.155:/home/ec2-user/app
             '''
             // Jalankan aplikasi di EC2 (ganti "yourapp.jar" dengan nama file JAR yang sesuai)
-            sh '''s
-                ssh -o StrictHostKeyChecking=no ec2-user@18.141.145.155 "nohup java -jar /app/simplemavenapp.jar > /dev/null 2>&1 &"
+            sh '''
+                ssh -o StrictHostKeyChecking=no ec2-user@18.141.145.155 "nohup java -jar /home/ec2-user/app/my-app-1.0-SNAPSHOT.jar > /dev/null 2>&1 &"
             '''
         }
     }
