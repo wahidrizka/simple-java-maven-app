@@ -20,7 +20,7 @@ node {
             '''
             // Jalankan aplikasi di EC2 (ganti "yourapp.jar" dengan nama file JAR yang sesuai)
             sh '''
-                ssh -o StrictHostKeyChecking=no ec2-user@18.141.145.155 "sudo yum update -y; sudo amazon-linux-extras install java-openjdk11 -y; nohup java -jar /home/ec2-user/app/my-app-1.0-SNAPSHOT.jar 2>&1 | tee /home/ec2-user/app/app.log &"
+                ssh -o StrictHostKeyChecking=no ec2-user@18.141.145.155 "nohup java -jar /home/ec2-user/app/my-app-1.0-SNAPSHOT.jar 2>&1 | tee /home/ec2-user/app/app.log &"
             '''
         }
     }
