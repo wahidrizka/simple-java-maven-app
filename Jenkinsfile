@@ -16,7 +16,7 @@ node {
         sshagent(['9dcfb994-e247-45ab-af64-9c7b51df5acc']) {
             // Copy file JAR dari direktori target ke instance EC2
             sh '''
-                scp -o StrictHostKeyChecking=no target/*.jar ec2-user@18.141.145.155:/app
+                scp -o StrictHostKeyChecking=no target/my-app-1.0-SNAPSHOT.jar ec2-user@18.141.145.155:/home/ec2-user/app
             '''
             // Jalankan aplikasi di EC2 (ganti "yourapp.jar" dengan nama file JAR yang sesuai)
             sh '''s
