@@ -39,7 +39,7 @@ node {
                     docker rmi simple-java-maven-app:latest || true;
 
                     # Build image tanpa Dockerfile
-                    echo 'FROM openjdk:17-jre-slim' > Dockerfile;
+                    echo 'FROM openjdk:17-alpine' > Dockerfile;
                     echo 'COPY my-app-1.0-SNAPSHOT.jar /app.jar' >> Dockerfile;
                     echo 'CMD [\"java\", \"-jar\", \"/app.jar\"]' >> Dockerfile;
 
