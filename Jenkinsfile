@@ -7,54 +7,53 @@ node {
 
     stage('Test') {
         sh "'${mvnHome}/bin/mvn' test"
-
-        // Post-test actions
         junit 'target/surefire-reports/*.xml'
     }
+
     stage('Deploy') {
         sshagent(['9dcfb994-e247-45ab-af64-9c7b51df5acc']) {
-            sh '''  
-                # Kirim file JAR dan Dockerfile ke EC2
+            sh '''
+                # Kirim file JAR ke EC2
                 scp -o StrictHostKeyChecking=no target/my-app-1.0-SNAPSHOT.jar ec2-user@18.141.145.155:/home/ec2-user/app/
-                
+
                 # SSH ke EC2 untuk membangun dan menjalankan container
                 ssh -o StrictHostKeyChecking=no ec2-user@18.141.145.155 "
                     cd /home/ec2-user/app;
 
-                # Pastikan Docker sudah terinstal
-                if ! command -v docker &> /dev/null; then
-                    sudo yum update -y;
-                    sudo yum install docker -y;
-                    sudo systemctl start docker;
-                    sudo systemctl enable docker;
-                    sudo usermod -aG docker ec2-user;
-                fi;
-              
-                # Stop dan remove container lama jika ada
-                docker stop simple-java-maven-app-container || true;
-                docker rm simple-java-maven-app-container || true;
-                
-                # Hapus image lama untuk mencegah konflik
-                docker rmi simple-java-maven-app:latest || true;
-                
-                # Build image tanpa Dockerfile
-                docker build -t simple-java-maven-app:latest - <<EOF
-                FROM openjdk:17-jre-slim
-                COPY /home/ec2-user/app/my-app-1.0-SNAPSHOT.jar /app.jar
-                CMD [\"java\", \"-jar\", \"/app.jar\"]
-                EOF
+                    # Pastikan Docker sudah terinstal
+                    if ! command -v docker &> /dev/null; then
+                        sudo yum update -y;
+                        sudo yum install docker -y;
+                        sudo systemctl start docker;
+                        sudo systemctl enable docker;
+                        sudo usermod -aG docker ec2-user;
+                    fi;
 
-                # Jalankan container baru
-                docker run -d --name simple-java-maven-app-container -p 8080:8080 my-app:latest;
+                    # Stop dan remove container lama jika ada
+                    docker stop simple-java-maven-app-container || true;
+                    docker rm simple-java-maven-app-container || true;
 
-                # Tampilkan log sementara
-                sleep 5;
-                docker logs simple-java-maven-app-container --tail 10;
+                    # Hapus image lama untuk mencegah konflik
+                    docker rmi simple-java-maven-app:latest || true;
 
-                # Jeda eksekusi pipeline selama 1 menit
-                echo "Menunggu 1 menit sebelum pipeline selesai..."
-                sleep 60
+                    # Build image tanpa Dockerfile
+                    docker build -t simple-java-maven-app:latest - <<EOF
+                    FROM openjdk:17-jre-slim
+                    COPY my-app-1.0-SNAPSHOT.jar /app.jar
+                    CMD [\"java\", \"-jar\", \"/app.jar\"]
+                    EOF
 
+                    # Jalankan container baru
+                    docker run -d --name simple-java-maven-app-container -p 8080:8080 simple-java-maven-app:latest;
+
+                    # Tampilkan log sementara
+                    sleep 5;
+                    docker logs simple-java-maven-app-container --tail 10;
+
+                    # Jeda eksekusi pipeline selama 1 menit
+                    echo "Menunggu 1 menit sebelum pipeline selesai..."
+                    sleep 60
+                "
             '''
         }
     }
