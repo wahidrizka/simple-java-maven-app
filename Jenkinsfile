@@ -13,21 +13,10 @@ node {
     }
     stage('Deploy') {
         sshagent(['9dcfb994-e247-45ab-af64-9c7b51df5acc']) {
-            sh '''
-                echo "=== Debugging Path ==="
-                pwd
-                ls -la $WORKSPACE
-
-                if [ ! -f $WORKSPACE/Dockerfile ]; then
-                    echo "ERROR: Dockerfile tidak ditemukan di $WORKSPACE!"
-                    exit 1
-                fi
-
-                echo "Dockerfile ditemukan, melanjutkan deploy..."
-                
+            sh '''  
                 # Kirim file JAR dan Dockerfile ke EC2
                 scp -o StrictHostKeyChecking=no target/my-app-1.0-SNAPSHOT.jar ec2-user@18.141.145.155:/home/ec2-user/app/
-                scp -o StrictHostKeyChecking=no $WORKSPACE/Dockerfile ec2-user@18.141.145.155:/home/ec2-user/app/
+                scp -o StrictHostKeyChecking=no Dockerfile ec2-user@18.141.145.155:/home/ec2-user/app/
 
                 # SSH ke EC2 untuk membangun dan menjalankan container
                 ssh -o StrictHostKeyChecking=no ec2-user@18.141.145.155 "
