@@ -42,7 +42,7 @@ node {
                     # Bangun Dockerfile secara dinamis
                     echo 'FROM openjdk:17-alpine' > Dockerfile;
                     echo 'COPY my-app-1.0-SNAPSHOT.jar /app.jar' >> Dockerfile;
-                    echo 'CMD ["java", "-jar", "/app.jar"]' >> Dockerfile;                    
+                    printf 'CMD ["java", "-jar", "/app.jar"]\n' >> Dockerfile                    
 
                     docker build -t simple-java-maven-app:latest .
 
