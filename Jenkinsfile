@@ -1,5 +1,10 @@
 node {
     def mvnHome = tool name: 'Maven'
+    
+    stage('Checkout') {
+        cleanWs()
+        checkout scm
+    }
 
     stage('Build') {
         sh "'${mvnHome}/bin/mvn' -B -DskipTests clean package"
