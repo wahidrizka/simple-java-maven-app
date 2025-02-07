@@ -41,7 +41,7 @@ node {
                     # Build image tanpa Dockerfile
                     echo 'FROM openjdk:17-alpine' > Dockerfile;
                     echo 'COPY my-app-1.0-SNAPSHOT.jar /app.jar' >> Dockerfile;
-                    echo 'CMD [\"java\", \"-jar\", \"/app.jar\"]' >> Dockerfile;
+                    echo 'CMD ["java", "-jar", "/app.jar"]' >> Dockerfile;
 
                     docker build -t simple-java-maven-app:latest .
 
