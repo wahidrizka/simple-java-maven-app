@@ -16,7 +16,14 @@ node {
     }
 
     stage('Manual Approval') {
-        input message: 'Lanjutkan ke tahap Deploy?', ok: 'Proceed'
+        def userInput = input(
+            message: 'Lanjutkan ke tahap Deploy? Ketik "approve" untuk melanjutkan.',
+            parameters: [string(name: 'Approval', defaultValue: '', description: 'Ketik "approve" untuk lanjut')]
+        )
+        
+        if (userInput != "approve") {
+            error("Tahap deploy dibatalkan secara otomatis karena input tidak valid!")
+        }
     }
 
     stage('Deploy') {
