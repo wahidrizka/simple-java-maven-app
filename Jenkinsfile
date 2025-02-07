@@ -29,6 +29,8 @@ node {
                         sudo usermod -aG docker ec2-user;
                     fi;
 
+                    newgrp docker;
+
                     # Stop dan remove container lama jika ada
                     docker stop simple-java-maven-app-container || true;
                     docker rm simple-java-maven-app-container || true;
@@ -37,11 +39,11 @@ node {
                     docker rmi simple-java-maven-app:latest || true;
 
                     # Build image tanpa Dockerfile
-                    docker build -t simple-java-maven-app:latest - <<EOF
-                    FROM openjdk:17-jre-slim
-                    COPY my-app-1.0-SNAPSHOT.jar /app.jar
-                    CMD [\"java\", \"-jar\", \"/app.jar\"]
-                    EOF
+                    echo 'FROM openjdk:17-jre-slim' > Dockerfile;
+                    echo 'COPY my-app-1.0-SNAPSHOT.jar /app.jar' >> Dockerfile;
+                    echo 'CMD [\"java\", \"-jar\", \"/app.jar\"]' >> Dockerfile;
+
+                    docker build -t simple-java-maven-app:latest .
 
                     # Jalankan container baru
                     docker run -d --name simple-java-maven-app-container -p 8080:8080 simple-java-maven-app:latest;
