@@ -69,7 +69,7 @@ node {
                     docker logs simple-java-maven-app-container --tail 10;
 
                     # Jeda eksekusi pipeline selama 1 menit
-                    echo "Menunggu 1 menit sebelum pipeline selesai..."
+                    echo "Menyelesaikan pipeline..."
                     sleep 60
                 "
             '''
