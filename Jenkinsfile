@@ -17,8 +17,8 @@ node {
 
     stage('Manual Approval') {
         def userInput = input(
-            message: 'Lanjutkan ke tahap Deploy? Ketik "approve" untuk melanjutkan.',
-            parameters: [string(name: 'Approval', defaultValue: '', description: 'Ketik "approve" untuk lanjut')]
+            message: 'Lanjutkan ke tahap Deploy? Ketik "approve" lalu klik proc untuk melanjutkan.',
+            parameters: [string(name: 'Approval', defaultValue: '', description: 'Ketik "approve"')]
         )
         
         if (userInput != "approve") {
@@ -62,7 +62,7 @@ node {
                     docker run -d --name simple-java-maven-app-container -p 8080:8080 simple-java-maven-app:latest;
                   
                     # Simpan log ke file
-                    docker logs simple-java-maven-app-container > /home/ec2-user/simple-java-maven-app.log;
+                    docker logs simple-java-maven-app-container --tail 100 > /home/ec2-user/simple-java-maven-app.log 2>&1;
 
                     # Tampilkan log sementara
                     sleep 5;
