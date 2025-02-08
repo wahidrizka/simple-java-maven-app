@@ -60,6 +60,9 @@ node {
 
                     # Jalankan container baru
                     docker run -d --name simple-java-maven-app-container -p 8080:8080 simple-java-maven-app:latest;
+                  
+                    # Simpan log ke file
+                    docker logs simple-java-maven-app-container > /home/ec2-user/simple-java-maven-app.log;
 
                     # Tampilkan log sementara
                     sleep 5;
